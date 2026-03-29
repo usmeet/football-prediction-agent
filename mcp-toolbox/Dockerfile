@@ -1,0 +1,12 @@
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+COPY toolbox .
+COPY tools.yaml .
+
+RUN chmod +x toolbox
+
+EXPOSE 5000
+
+CMD ["./toolbox", "--tools-file=tools.yaml", "--address=0.0.0.0"]

@@ -1,0 +1,79 @@
+sources:
+  football-bq-source:
+    kind: bigquery
+    project: stellar-acre-491313-h5
+
+tools:
+  get_team_stats:
+    kind: bigquery-sql
+    source: football-bq-source
+    statement: |
+      SELECT
+        team,
+        matches_played,
+        goals_scored,
+        goals_conceded,
+        shots_on_target,
+        wins,
+        ROUND(wins / matches_played * 100, 1) AS win_rate_pct,
+        ROUND(goals_scored / matches_played, 2) AS goals_per_game,
+        ROUND(goals_conceded / matches_played, 2) AS conceded_per_game
+      FROM `stellar-acre-491313-h5.matches.team_stats`
+      ORDER BY wins DESC
+    description: |
+      Returns season statistics for all Premier League teams including win rate,
+      goals per game, and defensive record.
+
+  get_head_to_head:
+    kind: bigquery-sql
+    source: football-bq-source
+    statement: |
+      SELECT *
+      FROM `stellar-acre-491313-h5.matches.head_to_head`
+      ORDER BY total_matches DESC
+    description: |
+      Returns historical head-to-head records between all team pairs.
+
+  get_recent_form:
+    kind: bigquery-sql
+    source: football-bq-source
+    statement: |
+      SELECT *
+      FROM `stellar-acre-491313-h5.matches.recent_form`
+      ORDER BY wins DESC
+    description: |
+      Returns current season form for each team.
+
+  get_all_matches:
+    kind: bigquery-sql
+    source: football-bq-source
+    statement: |
+      SELECT
+        HomeTeam, AwayTeam,
+        FTHG AS home_goals, FTAG AS away_goals,
+        FTR AS result,
+        HST AS home_shots_on_target,
+        AST AS away_shots_on_target,
+        season
+      FROM `stellar-acre-491313-h5.matches.all_seasons`
+      ORDER BY season DESC
+    description: |
+      Returns all match results across all seasons.
+
+  get_historical_stats:
+    kind: bigquery-sql
+    source: football-bq-source
+    statement: |
+      SELECT *
+      FROM `stellar-acre-491313-h5.matches.team_historical_stats`
+      ORDER BY team, season
+    description: |
+      Returns team performance stats broken down by season across multiple years.
+
+toolsets:
+  football_toolset:
+    - get_team_stats
+    - get_head_to_head
+    - get_recent_form
+    - get_all_matches
+    - get_historical_stats
